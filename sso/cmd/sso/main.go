@@ -3,6 +3,7 @@ package main
 import (
 	"log/slog"
 	"os"
+	app "sso/interal/app/grpc"
 	"sso/interal/config"
 )
 
@@ -20,6 +21,10 @@ func main() {
 		slog.Any("cfg", cfg),
 	)
 
+	application := app.New(log, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
+
+	application.GRPCSrv.MustRun()
+	
 }
 
 func setupLogger(env string) *slog.Logger {
