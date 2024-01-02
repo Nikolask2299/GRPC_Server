@@ -17,7 +17,7 @@ func Register(gRPC *grpc.Server){
 
 func (s *serverAPI) Login(ctx context.Context, req *ssov1.LoginRequest) (*ssov1.LoginResponse, error) {
 	
-	return &ssov1.LoginResponse{Token: "Skrip_Fell_Good_Inc",}, nil
+	return &ssov1.LoginResponse{Token: req.GetEmail() + " Fell_Good_Inc",}, nil
 }
 
 func (s *serverAPI) Register(ctx context.Context, req *ssov1.RegisterRequest) (*ssov1.RegisterResponse, error){
