@@ -2,5 +2,5 @@ env: "local" # dev, prod
 storage_path: "./storage/sso.db"
 token_ttl: 30m
 grpc:
-  port: 8080
+  port: 88088
   timeout: 1m
