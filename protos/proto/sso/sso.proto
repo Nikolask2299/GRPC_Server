@@ -19,13 +19,13 @@ message RegisterResponse {
     int64 user_id = 1; // id of the user to register with the service
 }
 
-message LoginResponse {
+message  LoginRequest {
     string email = 1; // email address of the user to login with the service
     string password = 2; // password of the user to login with the service
     int32 app_id = 3; // app_id of the user to login with the service
 }
 
-message LoginRequest {
+message  LoginResponse {
     string token = 1; // token of the user to login with the service   
 }
 
