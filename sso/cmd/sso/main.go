@@ -3,7 +3,7 @@ package main
 import (
 	"log/slog"
 	"os"
-	app "sso/interal/app/grpc"
+	app "sso/interal/app"
 	"sso/interal/config"
 )
 

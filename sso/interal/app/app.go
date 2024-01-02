@@ -2,20 +2,17 @@ package app
 
 import (
 	"log/slog"
+	grpcapp "sso/interal/app/grpc"
 	"time"
-	"google.golang.org/grpc"
 )
 
 type App struct {
-	gRPCSrv *grpcapp.App
+	GRPCSrv *grpcapp.App
 }
 
 func New(log *slog.Logger, grpcPort int, storagePath string, tokenTTL time.Duration,) *App {
 	
-	grpcApp := grpcapp.New() 
+	grpcApp := grpcapp.New(log, grpcPort)
 
-	return &App{
-		GRPCSrv: grpcApp,
-
-	}
+	return &App{GRPCSrv: grpcApp,}
 }
