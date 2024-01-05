@@ -3,4 +3,4 @@ storage_path: "./storage/sso.db"
 token_ttl: 30m
 grpc:
   port: 44044
-  timeout: 1m
+  timeout: 10m
