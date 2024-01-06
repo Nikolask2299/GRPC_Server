@@ -131,6 +131,12 @@ func (a *Auth) IsAdmin(ctx context.Context, userID int64) (bool, error) {
 
 	log.Info("Checking if user is an administrator for userID")
 	
-	
+	isAdmin, err := a.usrProvider.IsAdmin(ctx, userID)
+	if err != nil {
+		return false, fmt.Errorf("%s: %w", op, err)
+	}
 
+	log.Info("Checking if user is an administrator for userID", slog.Bool("Check is Admin", isAdmin))
+
+	return isAdmin, nil
 }
