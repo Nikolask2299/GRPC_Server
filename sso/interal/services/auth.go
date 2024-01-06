@@ -2,13 +2,21 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
-	"sso/interal/domain/models"
 	"time"
+
+	"sso/interal/lib/jwt"
+	"sso/interal/storage"
+	"sso/interal/domain/models"
+	
 	"golang.org/x/crypto/bcrypt"
 )
 
+var (
+	ErrInvalidCredentials = errors.New("invalid credentials")
+)
 type Auth struct {
 	log *slog.Logger
 	usrSaver  UserSaver
@@ -43,12 +51,51 @@ func New (log *slog.Logger, userSaver UserSaver, userProvider UserProvider, appP
 
 //Login checks if the user is logged in and returns an error if it is not logged
 func (a *Auth) Login(ctx context.Context, email string, password string, appID int) (string, error) {
-	panic("not implemented")
+	const op = "auth.Login"
+
+	log := a.log.With(
+		slog.String("op", op),
+		slog.String("email", email),
+	)
+
+	log.Info("Attempting to authenticate user")
+
+	user, err := a.usrProvider.User(ctx, email)
+	if err != nil {
+		if errors.Is(err, storage.ErrUserNotFound){
+			a.log.Warn("User not found", err)
+
+			return "", fmt.Errorf("%s: %w", op, ErrInvalidCredentials)
+		}
+	}
+
+	if err := bcrypt.CompareHashAndPassword(user.PassHash, []byte(password)); err != nil {
+		a.log.Info("Password does not match the hash of the user", err)
+		
+		return "", fmt.Errorf("%s: %w", op, ErrInvalidCredentials)
+	}
+
+	app, err := a.appProvider.App(ctx, appID)
+	if err != nil {
+		return "", fmt.Errorf("%s: %w", op, err)
+	}
+
+	log.Info("Successfully authenticated user")
+
+	token, err := jwt.NewToken(user, app, a.tokenTTL)
+	if err != nil {
+		a.log.Error("failed to create token for user", err)
+		
+		return "", fmt.Errorf("%s: %w", op, err)
+	}
+
+	return token, nil
 }
 
 //RegisterNewUser register the user with the app provider and returns an error if the user is already registered
 func (a *Auth) RegisterNewUser(ctx context.Context, email string, pass string)(int64, error){
 	const op = "auth.RegisterNewUser"
+
 	log := a.log.With(
 		slog.String("op", op),
 		slog.String("email", email),
@@ -75,5 +122,15 @@ func (a *Auth) RegisterNewUser(ctx context.Context, email string, pass string)(i
 
 //IsAdmin checks if the user is an administrator and returns an error if it is not an administrator
 func (a *Auth) IsAdmin(ctx context.Context, userID int64) (bool, error) {
-	panic("not implemented")	
+	const op = "Auth.IsAdmin"
+
+	log := a.log.With(
+		slog.String("op", op),
+		slog.Int64("userID", userID),
+	)
+
+	log.Info("Checking if user is an administrator for userID")
+	
+	
+
 }
