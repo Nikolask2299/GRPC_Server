@@ -15,6 +15,7 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
+	github.com/go-playground/locales v0.14.1
 	github.com/joho/godotenv v1.5.1 // indirect
 	google.golang.org/grpc v1.60.1
 	gopkg.in/yaml.v3 v3.0.1 // indirect

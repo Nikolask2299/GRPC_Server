@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 	ssov1 "protos/gen/go/sso"
-
+	
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -32,16 +32,8 @@ func Register(gRPC *grpc.Server, auth Auth){
 
 func (s *serverAPI) Login(ctx context.Context, req *ssov1.LoginRequest) (*ssov1.LoginResponse, error) {
 	
-	if req.GetEmail() == emptyEmPw {
-		return nil, status.Error(codes.InvalidArgument, "Email cannot be empty")
-	}
-
-	if req.GetPassword() == emptyEmPw {
-        return nil, status.Error(codes.InvalidArgument, "Password cannot be empty")
-    }
-
-	if req.GetAppId() == emptyId {
-		return nil, status.Error(codes.InvalidArgument, "AppId cannot be empty")
+	if err := isValidationLogin(req); err != nil {
+		return nil, err
 	}
 
  	token, err := s.auth.Login(ctx, req.GetEmail(), req.GetPassword(), int(req.GetAppId())) 
@@ -54,16 +46,36 @@ func (s *serverAPI) Login(ctx context.Context, req *ssov1.LoginRequest) (*ssov1.
 }
 
 func (s *serverAPI) Register(ctx context.Context, req *ssov1.RegisterRequest) (*ssov1.RegisterResponse, error){
-	panic("implement me")
+	if err := isValidationRegister(req); err != nil {
+		return nil, err
+	}
+
+	userID, err := s.auth.RegisterNewUser(ctx, req.GetEmail(), req.GetPassword())
+	if err != nil {
+		//TODO: ...
+		return nil, status.Error(codes.Internal, "internal server error")
+	}
+
+	return &ssov1.RegisterResponse{UserId: int64(userID),}, nil
 }
 
 func (s *serverAPI) IsAdmin(ctx context.Context, req *ssov1.IsAdminRequest) (*ssov1.IsAdminResponse, error){
-	panic("implement me")
+	if err := isValidationAdmin(req); err != nil {
+		return nil, err
+	}
+
+	isAdmin, err := s.auth.IsAdmin(ctx, int(req.GetUserId()))
+	if err != nil {
+		//TODO: ...
+		return nil, status.Error(codes.Internal, "internal server error")
+	}
+
+	return &ssov1.IsAdminResponse{IsAdmin: isAdmin}, nil
 }
 
 
 
-func isValidationRequest(req *ssov1.LoginRequest) error {
+func isValidationLogin(req *ssov1.LoginRequest) error {
 
 	if req.GetEmail() == emptyEmPw {
 		return status.Error(codes.InvalidArgument, "Email cannot be empty")
@@ -77,5 +89,25 @@ func isValidationRequest(req *ssov1.LoginRequest) error {
 		return status.Error(codes.InvalidArgument, "AppId cannot be empty")
 	}	
 	
+	return nil
+}
+
+func isValidationRegister(req *ssov1.RegisterRequest) error {
+	if req.GetEmail() == emptyEmPw {
+		return status.Error(codes.InvalidArgument, "Email cannot be empty")
+	}
+
+	if req.GetPassword() == emptyEmPw {
+        return status.Error(codes.InvalidArgument, "Password cannot be empty")
+    }
+
+	return nil
+}
+
+func isValidationAdmin(req *ssov1.IsAdminRequest) error {
+	if req.GetUserId() == emptyId {
+		return status.Error(codes.InvalidArgument, "UserId cannot be empty")
+	}
+
 	return nil
 }
