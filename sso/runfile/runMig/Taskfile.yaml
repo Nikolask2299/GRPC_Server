@@ -1,0 +1,10 @@
+version: "3"
+
+tasks:
+  migrate:
+    aliases:
+      - go 
+    desc: ""
+    cmds:
+      - go run E:/prim/GRPC_Server/sso/cmd/migrator --storage-path=E:/prim/GRPC_Server/sso/storage/sso.db --migrations-path=E:/prim/GRPC_Server/sso/migrations
+

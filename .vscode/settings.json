@@ -1,0 +1,7 @@
+{
+    "go.toolsEnvVars": {
+        "GOPROXY": "https://proxy.golang.org,direct"
+    },
+    "sqltools.connections": [],
+    "sqltools.useNodeRuntime": true
+}
