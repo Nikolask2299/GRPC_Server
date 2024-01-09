@@ -43,9 +43,9 @@ type AppProvider interface {
 // New creates a new instance of Auth with the given logger and user provider and app provider functions and returns a new instance of Auth
 func New(log *slog.Logger, userSaver UserSaver, userProvider UserProvider, appProvider AppProvider, tokenTTL time.Duration) *Auth {
 	return &Auth{
-		log: log,
 		usrSaver: userSaver,
 		usrProvider: userProvider,
+		log: log,
 		appProvider: appProvider,
 		tokenTTL: tokenTTL,
 	}
