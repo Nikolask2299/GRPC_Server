@@ -20,8 +20,8 @@ const (
 
 type Auth interface {
 	Login(ctx context.Context, email string, password string, appId int) (token string, err error)
-	RegisterNewUser(ctx context.Context, email string, password string) (userID int, err error)
-	IsAdmin(ctx context.Context, userID int) (isAdmin bool, err error)
+	RegisterNewUser(ctx context.Context, email string, password string) (userID int64, err error)
+	IsAdmin(ctx context.Context, userID int64) (isAdmin bool, err error)
 }
 
 type serverAPI struct {
@@ -73,7 +73,7 @@ func (s *serverAPI) IsAdmin(ctx context.Context, req *ssov1.IsAdminRequest) (*ss
 		return nil, err
 	}
 
-	isAdmin, err := s.auth.IsAdmin(ctx, int(req.GetUserId()))
+	isAdmin, err := s.auth.IsAdmin(ctx, req.GetUserId())
 	if err != nil {
 		if errors.Is(err, storage.ErrUserNotFound) {
 			return nil, status.Error(codes.NotFound, "User not found")
