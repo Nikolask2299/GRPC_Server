@@ -9,7 +9,7 @@ import (
 )
 
 func NewToken(user models.User, app models.App, duration time.Duration) (string, error) {
-	token := jwt.New(jwt.SigningMethodES256)
+	token := jwt.New(jwt.SigningMethodHS256)
 
 	clams := token.Claims.(jwt.MapClaims)
 
@@ -18,10 +18,11 @@ func NewToken(user models.User, app models.App, duration time.Duration) (string,
 	clams["exp"] = time.Now().Add(duration).Unix()
 	clams["app_id"] = app.ID
 
-	tockenSting, err := token.SignedString([]byte(app.Secret))
+	secr := []byte(app.Secret)
+	tokenSting, err := token.SignedString(secr)
 	if err != nil {
 		return "", err
 	}
 
-	return tockenSting, nil
+	return tokenSting, nil
 }

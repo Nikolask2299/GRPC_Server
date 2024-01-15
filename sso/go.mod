@@ -1,6 +1,6 @@
 module sso
 
-go 1.21.4
+go 1.21.6
 
 require (
 	github.com/golang-jwt/jwt/v5 v5.2.0
